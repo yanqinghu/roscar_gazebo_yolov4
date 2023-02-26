@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<launch>
+    <!-- 启动 rviz -->
+    <node pkg="rviz" type="rviz" name="rviz" />
+    <!-- 添加关节状态发布节点 -->
+    <node pkg="joint_state_publisher" type="joint_state_publisher" name="joint_state_publisher"/>
+    <!-- 添加机器人状态发布节点 -->
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher"/>
+
+
+    <!-- 加载地图服务 -->
+    <include file="$(find demo_slam_navigation)/launch/start_map_server.launch" />
+    <!-- 添加amcl文件 -->
+    <include file="$(find demo_slam_navigation)/launch/amcl_diff.launch" />
+
+</launch>

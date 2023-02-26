@@ -1,0 +1,18 @@
+<!-- robot 根标签 -->
+<robot name="car" xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <!-- 包含惯性矩阵 -->
+    <xacro:include filename="$(find demo_gazebo_urdf)/urdf/head.urdf.xacro"/>
+    <!-- 组合小车底盘、摄像头、深度相机、雷达 -->
+    <xacro:include filename="$(find demo_gazebo_urdf)/urdf/carbase.urdf.xacro"/>
+    <xacro:include filename="$(find demo_gazebo_urdf)/urdf/carcamera.urdf.xacro"/>
+    <xacro:include filename="$(find demo_gazebo_urdf)/urdf/carkinectcamera.urdf.xacro"/>
+    <xacro:include filename="$(find demo_gazebo_urdf)/urdf/carlaser.urdf.xacro"/>
+    <!-- 为小车 joint 添加传动装置以及控制器 -->
+    <xacro:include filename="$(find demo_gazebo_urdf)/urdf/gazebo/control.urdf.xacro"/>
+    <!-- laser_sensor 配置信息 -->
+    <xacro:include filename="$(find demo_gazebo_urdf)/urdf/gazebo/lasersensor.urdf.xacro"/>
+    <!-- camera_sensor 配置信息 -->
+    <xacro:include filename="$(find demo_gazebo_urdf)/urdf/gazebo/camerasensor.urdf.xacro"/>
+    <!-- kinectcamera_sensor 配置信息 -->
+    <xacro:include filename="$(find demo_gazebo_urdf)/urdf/gazebo/kinectcamerasensor.urdf.xacro"/>
+</robot>

@@ -1,0 +1,174 @@
+<!-- robot 根标签 -->
+<robot name="carbase" xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <!-- 封装变量、常量 -->
+    <xacro:property name="footprint_radius" value="0.001" />
+    <xacro:property name="base_radius" value="0.1" />
+    <xacro:property name="base_length" value="0.08" />
+    <xacro:property name="distance_level" value="0.015" />
+    <xacro:property name="base_mass" value="0.5" />
+    <!-- 参考地平线 -->
+    <link name="base_footprint">
+        <visual>
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <sphere radius="${footprint_radius}"/>
+            </geometry>
+            <material name="footprint_color">
+                <color rgba="1.0 0.0 0.0 1.0"/>
+            </material>
+        </visual>
+    </link>
+    <!-- 小车底盘 -->
+    <link name="base_link">
+        <!-- 外观可视化标签 -->
+        <visual>
+            <!-- 连杆的形状标签 -->
+            <geometry>
+                <!-- 盒状 -->
+                <!-- <box size="0.5 0.2 0.1" /> -->
+                <!-- 圆柱体 -->
+                <cylinder radius="${base_radius}" length="${base_length}"/>
+                <!-- 球体 -->
+                <!-- <sphere radius="0.5"/> -->
+                <!-- 为连杆添加皮肤 -->
+                <!-- <mesh filename="package://demo_urdf_rviz/meshes/autolabor_mini.stl" /> -->
+            </geometry>
+            <!-- 偏移量(x,y,z)与倾斜弧度(r(翻滚)，p(俯仰)，y(偏航)) -->
+            <origin xyz="0.0 0.0 0.0" rpy="0 0.0 0"/>
+            <!-- 颜色 rgba:
+                        r(red 红色)，
+                        g(green 绿色)，
+                        b(blue 蓝色)，
+                        a(alph 透明度) 
+                        四者取值[0，1]
+            -->
+            <material name="car_color" >
+                <color rgba="0.78 0.93 0.8 1.0"/>
+            </material>
+        </visual>
+        <collision>
+            <geometry>
+                <!-- 圆柱体 -->
+                <cylinder radius="${base_radius}" length="${base_length}"/>
+            </geometry>
+            <!-- 偏移量(x,y,z)与倾斜弧度(r(翻滚)，p(俯仰)，y(偏航)) -->
+            <origin xyz="0.0 0.0 0.0" rpy="0 0.0 0"/>
+        </collision>
+        <!-- 调用惯性矩阵函数 -->
+        <xacro:cylinder_inertial_matrix m="${base_mass}" r="${base_radius}" h="${base_length}" />
+    </link>
+    <gazebo reference="base_link">
+        <material>
+            Gazebo/Red
+        </material>
+    </gazebo>
+
+    <!-- 底盘与参考地平面关节 -->
+    <joint name="baselink2basefootprint" type="fixed">
+        <origin xyz="0.0 0.0 ${distance_level + base_length / 2}" rpy="0.0 0.0 0.0"/>
+        <parent link="base_footprint"/>
+        <child link="base_link"/>
+        <axis xyz="0.0 0.0 0.0"/>
+    </joint>
+
+    <!-- 驱动轮属性 -->
+    <xacro:property name="PI" value="3.1415927" />
+    <xacro:property name="wheel_radius" value="0.0325" />
+    <xacro:property name="wheel_length" value="0.015" />
+    <xacro:property name="wheel_mass" value="0.05" />
+    <xacro:property name="wheel_distance" value="${-(distance_level + base_length / 2 - wheel_radius)}" />
+    <!-- 驱动轮宏实现 -->
+    <xacro:macro name="wheelfunc" params="name flag" >
+        <link name="${name}_wheel">
+            <!-- 外观可视化标签 -->
+            <visual>
+                <!-- 连杆的形状标签 -->
+                <geometry>
+                    <!-- 圆柱体 -->
+                    <cylinder radius="${wheel_radius}" length="${wheel_length}"/>
+                </geometry>
+                <!-- 偏移量(x,y,z)与倾斜弧度(r(翻滚)，p(俯仰)，y(偏航)) -->
+                <origin xyz="0.0 0.0 0.0" rpy="${PI / 2} 0.0 0.0"/>
+                <material name="${name}_color" >
+                    <color rgba="0 0 0 1"/>
+                </material>
+            </visual>
+            <collision>
+                <geometry>
+                    <!-- 圆柱体 -->
+                    <cylinder radius="${wheel_radius}" length="${wheel_length}"/>
+                </geometry>
+                <!-- 偏移量(x,y,z)与倾斜弧度(r(翻滚)，p(俯仰)，y(偏航)) -->
+                <origin xyz="0.0 0.0 0.0" rpy="${PI / 2} 0.0 0.0"/>
+            </collision>
+            <xacro:cylinder_inertial_matrix m="${wheel_mass}" r="${wheel_radius}" h="${wheel_length}" />
+        </link>
+        <gazebo reference="${name}_wheel" >
+            <material>
+                Gazebo/Black
+            </material>
+        </gazebo>
+
+        <!-- 轮关节 -->
+        <joint name="${name}wheel2baselink" type="continuous">
+            <origin xyz="0.0 ${base_radius * flag} ${wheel_distance}" rpy="0.0 0.0 0.0"/>
+            <parent link="base_link"/>
+            <child link="${name}_wheel"/>
+            <axis xyz="0.0 1 0.0"/>
+        </joint>
+    </xacro:macro>
+    <!-- 驱动轮宏调用 -->
+    <xacro:wheelfunc name="left" flag="1" />
+    <xacro:wheelfunc name="right" flag="-1" />
+
+    <!-- 万向轮 -->
+    <!-- 万向轮属性 -->
+    <xacro:property name="support_wheel_radius" value="0.0075" />
+    <xacro:property name="support_wheel_mass" value="0.03" />
+
+    <!-- 万向轮宏 -->
+    <xacro:macro name="supportwheelfunc" params="name flag" >
+        <link name="${name}_wheel">
+            <!-- 外观可视化标签 -->
+            <visual>
+                <!-- 连杆的形状标签 -->
+                <geometry>
+                    <!-- 球体 -->
+                    <sphere radius="${support_wheel_radius}"/>
+                </geometry>
+                <!-- 偏移量(x,y,z)与倾斜弧度(r(翻滚)，p(俯仰)，y(偏航)) -->
+                <origin xyz="0.0 0.0 0.0" rpy="0 0.0 0"/>
+                <material name="${name}_color" >
+                    <color rgba="0 0 0 1"/>
+                </material>
+            </visual>
+            <collision>
+                <geometry>
+                    <!-- 球体 -->
+                    <sphere radius="${support_wheel_radius}"/>
+                </geometry>
+                <!-- 偏移量(x,y,z)与倾斜弧度(r(翻滚)，p(俯仰)，y(偏航)) -->
+                <origin xyz="0.0 0.0 0.0" rpy="0 0.0 0"/>
+            </collision>
+            <xacro:sphere_inertial_matrix m="${support_wheel_mass}" r="${support_wheel_radius}" />
+            
+        </link>
+        <gazebo reference="${name}_wheel" >
+            <material>
+                Gazebo/Black
+            </material>
+        </gazebo>
+
+        <!-- 轮关节 -->
+        <joint name="${name}wheel2baselink" type="continuous">
+            <origin xyz="${flag * (base_radius - support_wheel_radius)} 0.0 ${-(distance_level + base_length / 2 - support_wheel_radius)}" rpy="0.0 0.0 0.0"/>
+            <parent link="base_link"/>
+            <child link="${name}_wheel"/>
+            <axis xyz="1 1 1"/>
+        </joint>
+    </xacro:macro>
+    <!-- 万向轮宏调用 -->
+    <xacro:supportwheelfunc name="front" flag="1" />
+    <xacro:supportwheelfunc name="back" flag="-1" />
+
+</robot>

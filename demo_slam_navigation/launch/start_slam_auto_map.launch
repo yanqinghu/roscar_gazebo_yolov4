@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<launch>
+    <!-- 机器人自主移动实现构建地图  -->
+    <!-- 启动小车模型 -->
+    <include file="$(find demo_slam_navigation)/launch/start_mycar_gazebo.launch"/>
+    
+    <!-- 启动SLAM 节点 -->
+    <include file="$(find demo_slam_navigation)/launch/start_slam.launch"/>
+    <!-- 运行 move_base 节点 -->
+    <include file="$(find demo_slam_navigation)/launch/start_move_base.launch"/>
+    <!-- 保存地图文件 -->
+    <!-- <arg name="filename" value="$(find demo_slam_navigation)/map/nav_auto_map" /> -->
+    <!-- <node pkg="map_server" type="map_saver" name="map_save" args="-f $(arg filename)" /> -->
+</launch>

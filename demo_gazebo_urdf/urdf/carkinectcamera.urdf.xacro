@@ -1,0 +1,46 @@
+<!-- robot 根标签 -->
+<robot name="carkinectcamera" xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <!--  camera 组件-->
+    <!-- camera属性 -->
+    <xacro:property name="kinectcamera_length" value="0.02" />
+    <xacro:property name="kinectcamera_width" value="0.04" />
+    <xacro:property name="kinectcamera_hight" value="0.04" />
+    <xacro:property name="kinectcamera_mass" value="0.02" />
+    <xacro:property name="kinectjoint_camera_x" value="0.0" />
+    <xacro:property name="kinectjoint_camera_y" value="${base_radius - kinectcamera_width}" />
+    <xacro:property name="kinectjoint_camera_z" value="${base_length / 2 + kinectcamera_hight / 2}" />
+
+    <!-- 摄像头link -->
+    <link name="kinectcamera_link">
+        <visual>
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <box size="${kinectcamera_length} ${kinectcamera_width} ${kinectcamera_hight}"/>
+            </geometry>
+            <material name="kinectcamera_color">
+                <color rgba="1 0.0 1 0.8"/>
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <box size="${kinectcamera_length} ${kinectcamera_width} ${kinectcamera_hight}"/>
+            </geometry>
+        </collision>
+        <xacro:Box_inertial_matrix m="${kinectcamera_mass}" l="${kinectcamera_length}" w="${kinectcamera_width}" h="${kinectcamera_hight}" />
+        
+    </link>
+    <gazebo reference="kinectcamera_link">
+        <material>
+            Gazebo/Green
+        </material>
+    </gazebo>
+
+    <!-- 摄像头joint -->
+    <joint name="kinectcameralink2baselink" type="fixed">
+        <origin xyz="${kinectjoint_camera_x} ${kinectjoint_camera_y} ${kinectjoint_camera_z}" rpy="0.0 0.0 0.0"/>
+        <parent link="base_link"/>
+        <child link="kinectcamera_link"/>
+        <axis xyz="0.0 0.0 0.0"/>
+    </joint>
+</robot>

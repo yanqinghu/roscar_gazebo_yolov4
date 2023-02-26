@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<launch>
+
+    <!-- 启动小车模型 -->
+    <include file="$(find demo_slam_navigation)/launch/start_mycar_gazebo.launch"/>
+
+    <!-- 加载地图服务节点 -->
+    <include file="$(find demo_slam_navigation)/launch/start_map_server.launch"/>
+
+    <!-- 启动AMCL节点 -->
+    <include file="$(find demo_slam_navigation)/launch/amcl_diff.launch"/>
+
+    <!-- 运行move_base节点 -->
+    <include file="$(find demo_slam_navigation)/launch/start_move_base.launch"/>
+
+    <!-- 运行rviz节点 -->
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find demo_slam_navigation)/config/navigation_planner.rviz" />
+    <!-- 添加关节状态发布节点 -->
+    <node pkg="joint_state_publisher" type="joint_state_publisher" name="joint_state_publisher"/>
+    <!-- 添加机器人状态发布节点 -->
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher"/>
+
+</launch>

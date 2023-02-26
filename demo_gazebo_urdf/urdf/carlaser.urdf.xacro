@@ -1,0 +1,82 @@
+<!-- robot 根标签 -->
+<robot name="carlaser" xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <!--  laser 组件-->
+    <!-- support属性 -->
+    <xacro:property name="support_laser_radius" value="0.02" />
+    <xacro:property name="support_laser_length" value="0.15" />
+    <xacro:property name="support_laser_mass" value="0.02" />
+    <xacro:property name="support_laser_x" value="0.0" />
+    <xacro:property name="support_laser_y" value="0.0" />
+    <xacro:property name="support_laser_z" value="${support_laser_length / 2 + base_length / 2}" />
+    <!-- 支架link -->
+    <link name="support_laser_link">
+        <visual name="">
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <cylinder radius="${support_laser_radius}" length="${support_laser_length}"/>
+            </geometry>
+            <material name="support_laser_color">
+                <color rgba="0.8 0.2 0.0 0.8"/>
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <cylinder radius="${support_laser_radius}" length="${support_laser_length}"/>
+            </geometry>
+        </collision>
+        <xacro:cylinder_inertial_matrix m="${support_laser_mass}" r="${support_laser_radius}" h="${support_laser_length}" />
+
+    </link>
+    <gazebo reference="support_laser_link">
+        <material>
+            Gazebo/Yellow
+        </material>
+    </gazebo>
+
+    <!-- 支架joint -->
+    <joint name="supportlaser2baselink" type="fixed">
+        <origin xyz="${support_laser_x} ${support_laser_y} ${support_laser_z}" rpy="0.0 0.0 0.0"/>
+        <parent link="base_link"/>
+        <child link="support_laser_link"/>
+    </joint>
+    <!-- laser属性 -->
+    <xacro:property name="laser_radius" value="0.04" />
+    <xacro:property name="laser_length" value="0.06" />
+    <xacro:property name="laser_mass" value="0.05" />
+    <xacro:property name="joint_laser_x" value="0.0" />
+    <xacro:property name="joint_laser_y" value="0.0" />
+    <xacro:property name="joint_laser_z" value="${laser_length / 2 + support_laser_length / 2}" />
+    <!-- 雷达link -->
+    <link name="laser_link">
+        <visual>
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <cylinder radius="${laser_radius}" length="${laser_length}"/>
+            </geometry>
+            <material name="laser_color">
+                <color rgba="0 0 0 0.8"/>
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <cylinder radius="${laser_radius}" length="${laser_length}"/>
+            </geometry>
+        </collision>
+        <xacro:cylinder_inertial_matrix m="${laser_mass}" r="${laser_radius}" h="${laser_length}" />
+        
+    </link>
+    <gazebo reference="laser_link">
+        <material>
+            Gazebo/Black
+        </material>
+    </gazebo>
+
+    <!-- 雷达joint -->
+    <joint name="laserlink2supportlaser" type="fixed">
+        <origin xyz="${joint_laser_x} ${joint_laser_y} ${joint_laser_z}" rpy="0.0 0.0 0.0"/>
+        <parent link="support_laser_link"/>
+        <child link="laser_link"/>
+    </joint>
+</robot>

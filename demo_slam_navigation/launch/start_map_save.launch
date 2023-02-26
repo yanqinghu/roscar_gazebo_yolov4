@@ -1,0 +1,5 @@
+<launch>
+    <!-- 保存地图文件 -->
+    <arg name="filename" value="$(find demo_slam_navigation)/map/nav_map_1" />
+    <node pkg="map_server" type="map_saver" name="map_save" args="-f $(arg filename)" />
+</launch>

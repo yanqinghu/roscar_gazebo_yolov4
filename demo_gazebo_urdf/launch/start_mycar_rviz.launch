@@ -1,0 +1,14 @@
+<launch>
+    <!-- 将 urdf 文件内容加载到参数服务器  -->
+    <!-- <param name="robot_description" command="$(find xacro)/xacro $(find demo_gazebo_urdf)/urdf/car.urdf.xacro"/> -->
+    <!-- 添加点云坐标系到 kinectcamera 连杆坐标系变换  -->
+    <node pkg="tf2_ros" type="static_transform_publisher" name="static_transform_publisher" args="0 0 0 -1.57 0 -1.57 /kinectcamera_link /kinectcamera_depth" />
+    <!-- 启动 rviz -->
+    <node pkg="rviz" type="rviz" name="rviz" args="-d $(find demo_gazebo_urdf)/config/show_mycar.rviz" />
+    <!-- 添加关节状态发布节点 -->
+    <node pkg="joint_state_publisher" type="joint_state_publisher" name="joint_state_publisher"/>
+    <!-- 添加机器人状态发布节点 -->
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher"/>
+    <!-- 添加机器人状态发布节点 -->
+    <!-- <node pkg="joint_state_publisher_gui" type="joint_state_publisher_gui" name="joint_state_publisher_gui"/> -->
+</launch>
